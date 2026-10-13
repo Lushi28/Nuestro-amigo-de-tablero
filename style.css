@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PlanAmigo</title>
+
+  <style>
+    :root {
+      --fondo: #fff9f0;
+      --principal: #6c8ebf;
+      --acento: #f4c95d;
+      --texto: #30343b;
+      --completada: #8bbf9f;
+      --blanco: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 32px 16px;
+      background: var(--fondo);
+      color: var(--texto);
+      font-family: Arial, sans-serif;
+    }
+
+    .planificador {
+      width: min(100%, 620px);
+      margin: 0 auto;
+    }
+
+    h1 {
+      color: var(--principal);
+      text-align: center;
+    }
+
+    .subtitulo {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .formulario {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    input {
+      flex: 1;
+      min-width: 0;
+      padding: 14px;
+      border: 2px solid var(--principal);
+      border-radius: 12px;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 14px 18px;
+      border: 0;
+      border-radius: 12px;
+      background: var(--principal);
+      color: var(--blanco);
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      opacity: 0.88;
+    }
+
+    .tareas {
+      display: grid;
+      gap: 12px;
+    }
+
+    .tarea {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      background: var(--blanco);
+      border-radius: 14px;
+      box-shadow: 0 3px 10px #30343b12;
+    }
+
+    .tarea input {
+      flex: none;
+      width: 20px;
+      height: 20px;
+      accent-color: var(--completada);
+    }
+
+    .tarea.completada span {
+      color: #65736a;
+      text-decoration: line-through;
+    }
+
+    @media (max-width: 480px) {
+      .formulario {
+        flex-direction: column;
+      }
+
+      .formulario button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="planificador">
+    <h1>PlanAmigo</h1>
+    <p class="subtitulo">¡Hola! ¿Qué te gustaría organizar hoy?</p>
+
+    <form class="formulario" id="formulario">
+      <input
+        id="entradaTarea"
+        type="text"
+        placeholder="Escribe una tarea..."
+        aria-label="Nueva tarea"
+        required
+      />
+      <button type="submit">Agregar tarea</button>
+    </form>
+
+    <section class="tareas" id="listaTareas" aria-label="Lista de tareas">
+      <label class="tarea">
+        <input type="checkbox" />
+        <span>Organizar mis pendientes</span>
+      </label>
+
+      <label class="tarea">
+        <input type="checkbox" />
+        <span>Planear la semana</span>
+      </label>
+    </section>
+  </main>
+
+  <script>
+    const formulario = document.querySelector("#formulario");
+    const entradaTarea = document.querySelector("#entradaTarea");
+    const listaTareas = document.querySelector("#listaTareas");
+
+    formulario.addEventListener("submit", (evento) => {
+      evento.preventDefault();
+
+      const texto = entradaTarea.value.trim();
+      if (!texto) return;
+
+      const tarea = document.createElement("label");
+      tarea.className = "tarea";
+
+      const casilla = document.createElement("input");
+      casilla.type = "checkbox";
+
+      const nombre = document.createElement("span");
+      nombre.textContent = texto;
+
+      casilla.addEventListener("change", () => {
+        tarea.classList.toggle("completada", casilla.checked);
+      });
+
+      tarea.append(casilla, nombre);
+      listaTareas.append(tarea);
+
+      formulario.reset();
+      entradaTarea.focus();
+    });
+  </script>
+</body>
+</html>
