@@ -1,11 +1,117 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plan Amigo | Planificador de tareas</title>
+
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+    crossorigin="anonymous"
+  >
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
 </head>
 <body>
-    
+  <main class="planificador container">
+    <header class="encabezado">
+      <p class="etiqueta">ORGANIZA TU DÍA</p>
+      <h1>Plan Amigo <span aria-hidden="true">📒</span></h1>
+      <p class="subtitulo">Tus pendientes, un paso a la vez.</p>
+    </header>
+
+    <section class="panel" aria-labelledby="tituloFormulario">
+      <h2 id="tituloFormulario">Agregar una tarea</h2>
+
+      <form id="formularioTarea" novalidate>
+        <div class="campo">
+          <label for="nombre">Nombre de la tarea</label>
+          <input
+            class="form-control"
+            id="nombre"
+            name="nombre"
+            type="text"
+            placeholder="Ej. Preparar presentación"
+            required
+          >
+        </div>
+
+        <div class="campo">
+          <label for="descripcion">Descripción</label>
+          <textarea
+            class="form-control"
+            id="descripcion"
+            name="descripcion"
+            rows="3"
+            placeholder="¿Qué necesitas hacer?"
+            required
+          ></textarea>
+        </div>
+
+        <div class="fila-campos">
+          <div class="campo">
+            <label for="asignadoA">Asignado a</label>
+            <input
+              class="form-control"
+              id="asignadoA"
+              name="asignadoA"
+              type="text"
+              placeholder="Nombre de la persona"
+              required
+            >
+          </div>
+
+          <div class="campo">
+            <label for="fechaDeEntrega">Fecha de entrega</label>
+            <input
+              class="form-control"
+              id="fechaDeEntrega"
+              name="fechaDeEntrega"
+              type="date"
+              required
+            >
+          </div>
+        </div>
+
+        <div class="campo">
+          <label for="estado">Estado</label>
+          <select class="form-select" id="estado" name="estado" required>
+            <option value="">Selecciona un estado</option>
+            <option value="POR HACER">Pendiente / Por hacer</option>
+            <option value="EN PROCESO">En progreso / En proceso</option>
+            <option value="REVISIÓN">Revisión</option>
+            <option value="HECHO">Hecho</option>
+          </select>
+        </div>
+
+        <div
+          id="errores"
+          class="errores"
+          role="alert"
+          aria-live="polite"
+          hidden
+        ></div>
+
+        <button class="boton-agregar" type="submit">
+          Agregar tarea <span aria-hidden="true">＋</span>
+        </button>
+      </form>
+    </section>
+
+    <section class="seccion-tareas" aria-labelledby="tituloTareas">
+      <div class="encabezado-tareas">
+        <h2 id="tituloTareas">Mis tareas</h2>
+        <span id="cantidadTareas" class="cantidad">0 tareas</span>
+      </div>
+
+      <div id="listaTareas" class="lista-tareas" aria-live="polite"></div>
+    </section>
+
+    <footer>
+      Las tareas se guardan en memoria mientras esta página está abierta.
+    </footer>
+  </main>
 </body>
 </html>
