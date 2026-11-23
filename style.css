@@ -229,13 +229,47 @@ h2 {
 
 .estado {
   display: inline-block;
-  margin-top: 14px;
-  padding: 5px 9px;
+  padding: 5px 10px;
   border-radius: 999px;
-  background: #eef3fa;
-  color: var(--principal-oscuro);
   font-size: 0.75rem;
   font-weight: 700;
+}
+
+/* Colores personalizados según el estado de la tarea */
+.estado-por-hacer {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.estado-en-proceso {
+  background: #cff4fc;
+  color: #055160;
+}
+
+.estado-revision {
+  background: #e2e3e5;
+  color: #41464b;
+}
+
+.estado-hecho {
+  background: #d1e7dd;
+  color: #0f5132;
+}
+
+/* Contenedor inferior de la tarjeta para alinear el estado y el botón */
+.pie-tarjeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid var(--borde);
+  gap: 10px;
+}
+
+.done-button {
+  font-size: 0.82rem;
+  font-weight: 600;
 }
 
 .boton-eliminar {
