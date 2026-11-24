@@ -18,7 +18,7 @@ class TaskManager {
         id: 2,
         nombre: "Preparar presentación del proyecto",
         descripcion: "Reunir las ideas principales y crear las diapositivas.",
-        asignadoA: "Camila Torres",
+        asignadoA: "Fernanda Doria",
         fechaDeEntrega: "2026-10-25",
         estado: "EN PROCESO"
       },
@@ -26,7 +26,7 @@ class TaskManager {
         id: 3,
         nombre: "Revisar los requisitos del sprint",
         descripcion: "Leer la guía y comprobar cada punto de la rúbrica.",
-        asignadoA: "Andrés Gómez",
+        asignadoA: "Mery Gómez",
         fechaDeEntrega: "2026-10-26",
         estado: "REVISIÓN"
       },
@@ -62,7 +62,10 @@ class TaskManager {
     return this.tasks.filter(task => task.estado === status);
   }
 
+  // ------------------------------------------------------------------------
+  // Función 1: AGREGAR TAREA (addTask)
   // Agrega una nueva tarea a la lista con un id único generado
+  // ------------------------------------------------------------------------
   addTask(task) {
     const newTask = {
       id: this.currentId++,
@@ -77,23 +80,43 @@ class TaskManager {
     return newTask;
   }
 
-  // Elimina una tarea comparando por su identificador
+  // ------------------------------------------------------------------------
+  // Función 2: ELIMINAR TAREA (deleteTask)
+  // Elimina una tarea comparando por su identificador numérico
+  // ------------------------------------------------------------------------
   deleteTask(taskId) {
     const longitudInicial = this.tasks.length;
     this.tasks = this.tasks.filter(task => task.id !== Number(taskId));
     return this.tasks.length < longitudInicial;
   }
 
-  // Actualiza el estado de una tarea existente
-  updateTask(taskId, status) {
+  // ------------------------------------------------------------------------
+  // Función 3: ACTUALIZAR TAREA (updateTask)
+  // Actualiza los datos o el estado de una tarea existente en TaskManager
+  // ------------------------------------------------------------------------
+  updateTask(taskId, nuevosDatos) {
     const task = this.getTaskById(Number(taskId));
     if (!task) return false;
 
-    task.estado = status;
+    // Si recibimos un objeto con los campos actualizados del formulario
+    if (typeof nuevosDatos === "object" && nuevosDatos !== null) {
+      if (nuevosDatos.nombre !== undefined) task.nombre = nuevosDatos.nombre;
+      if (nuevosDatos.descripcion !== undefined) task.descripcion = nuevosDatos.descripcion;
+      if (nuevosDatos.asignadoA !== undefined) task.asignadoA = nuevosDatos.asignadoA;
+      if (nuevosDatos.fechaDeEntrega !== undefined) task.fechaDeEntrega = nuevosDatos.fechaDeEntrega;
+      if (nuevosDatos.estado !== undefined) task.estado = nuevosDatos.estado;
+    } else if (typeof nuevosDatos === "string") {
+      // Si se pasa un string, actualizamos directamente el estado
+      task.estado = nuevosDatos;
+    }
+
     return true;
   }
 
+  // ------------------------------------------------------------------------
+  // Función 4: ASIGNAR TAREA (assignTask)
   // Asigna una tarea a una persona diferente
+  // ------------------------------------------------------------------------
   assignTask(taskId, assignee) {
     const task = this.getTaskById(Number(taskId));
     if (!task) return false;
@@ -103,11 +126,10 @@ class TaskManager {
   }
 
   // ------------------------------------------------------------------------
-  // PASO 4 (Tarea 7): Método para buscar una tarea por su id
+  // Método para buscar una tarea por su id
   // Recibe el id numérico y recorre this.tasks para encontrarla y retornarla.
   // ------------------------------------------------------------------------
   getTaskById(taskId) {
-    // Variable para almacenar la tarea que coincida con el id
     let tareaEncontrada;
 
     // Recorremos el arreglo de tareas
@@ -120,15 +142,16 @@ class TaskManager {
       }
     }
 
-    // Retornamos la tarea encontrada (o undefined si no existe)
     return tareaEncontrada;
   }
 
   // ------------------------------------------------------------------------
-  // TAREA 8 - PASO 1: Guardar las tareas en localStorage
+  // LOCALSTORAGE: Guardar las tareas
   // Convierte el arreglo de tareas y el contador de IDs en texto JSON y los guarda.
   // ------------------------------------------------------------------------
   save() {
+    if (typeof localStorage === "undefined") return;
+
     // 1. Convertimos el arreglo this.tasks a string JSON
     const tasksJson = JSON.stringify(this.tasks);
 
@@ -141,14 +164,15 @@ class TaskManager {
   }
 
   // ------------------------------------------------------------------------
-  // TAREA 8 - PASO 3: Cargar las tareas desde localStorage
+  // LOCALSTORAGE: Cargar las tareas
   // Si hay datos guardados previamente en el navegador, los recupera y asigna.
   // ------------------------------------------------------------------------
   load() {
+    if (typeof localStorage === "undefined") return;
+
     // 1. Verificamos si hay tareas guardadas en localStorage
     const tasksJson = localStorage.getItem("tasks");
 
-    // Si existen datos guardados, los convertimos con JSON.parse()
     if (tasksJson) {
       this.tasks = JSON.parse(tasksJson);
     } else {
@@ -159,7 +183,6 @@ class TaskManager {
     // 2. Verificamos si está guardado el contador de IDs
     const currentIdString = localStorage.getItem("currentId");
 
-    // Si existe, lo convertimos a número para continuar la secuencia correctamente
     if (currentIdString) {
       this.currentId = Number(currentIdString);
     }
@@ -167,11 +190,14 @@ class TaskManager {
 
   // ------------------------------------------------------------------------
   // RENDERIZADO:
-  // Método que limpia el contenedor y dibuja todas las tarjetas en pantalla.
+  // Limpia el contenedor y dibuja todas las tarjetas en pantalla.
   // ------------------------------------------------------------------------
   render() {
+    if (typeof document === "undefined") return;
+
     const contenedorLista = document.querySelector("#listaTareas");
     const contadorElemento = document.querySelector("#cantidadTareas");
+    if (!contenedorLista) return;
 
     // 1. Limpiamos el contenedor para evitar duplicar tarjetas
     contenedorLista.innerHTML = "";
@@ -193,7 +219,6 @@ class TaskManager {
     const tarjetasHtml = [];
     for (let i = 0; i < this.tasks.length; i++) {
       const tarea = this.tasks[i];
-      // Llamamos a la función constructora pasando las propiedades y el id
       const htmlTarjeta = createTaskHtml(
         tarea.id,
         tarea.nombre,
@@ -216,16 +241,6 @@ class TaskManager {
   }
 }
 
-// Creamos la instancia principal del administrador de tareas
-const taskManager = new TaskManager();
-
-// ==========================================================================
-// SELECCIÓN DE ELEMENTOS DEL DOM
-// ==========================================================================
-const formulario = document.querySelector("#formularioTarea");
-const listaTareas = document.querySelector("#listaTareas");
-const errores = document.querySelector("#errores");
-
 // ==========================================================================
 // FUNCIÓN QUE CREA EL HTML DE UNA TARJETA CON TEMPLATE LITERALS
 // Recibe los datos de la tarea incluyendo su id único para data-task-id.
@@ -244,14 +259,18 @@ function createTaskHtml(id, nombre, descripcion, asignadoA, fechaDeEntrega, esta
   // Si la tarea ya se encuentra en estado HECHO, ocultamos el botón de completar
   const botonCompletarOculto = estado === "HECHO" ? "d-none" : "";
 
-  // Retornamos el template literal con data-task-id y el botón con clase done-button
   return `
     <article class="card tarjeta-tarea" data-task-id="${id}">
       <div class="parte-superior">
         <h3>${nombre}</h3>
-        <button type="button" class="boton-eliminar" aria-label="Eliminar tarea: ${nombre}">
-          Eliminar
-        </button>
+        <div class="acciones-superiores">
+          <button type="button" class="btn btn-sm btn-outline-secondary btn-editar" title="Editar tarea">
+            Editar
+          </button>
+          <button type="button" class="boton-eliminar" aria-label="Eliminar tarea: ${nombre}">
+            Eliminar
+          </button>
+        </div>
       </div>
 
       <p>${descripcion}</p>
@@ -271,134 +290,187 @@ function createTaskHtml(id, nombre, descripcion, asignadoA, fechaDeEntrega, esta
   `;
 }
 
+// Variable global para recordar qué tarea estamos editando (null si estamos agregando)
+let idTareaEnEdicion = null;
+
 // ==========================================================================
-// VALIDACIÓN DEL FORMULARIO DE TAREAS
+// LÓGICA DEL DOM (solo se ejecuta si estamos en el navegador)
 // ==========================================================================
-function validateTaskForm() {
-  const nombre = document.querySelector("#nombre").value.trim();
-  const descripcion = document.querySelector("#descripcion").value.trim();
-  const asignadoA = document.querySelector("#asignadoA").value.trim();
-  const fechaDeEntrega = document.querySelector("#fechaDeEntrega").value;
-  const estado = document.querySelector("#estado").value;
+if (typeof document !== "undefined") {
+  const taskManager = new TaskManager();
 
-  const mensajes = [];
+  const formulario = document.querySelector("#formularioTarea");
+  const listaTareas = document.querySelector("#listaTareas");
+  const errores = document.querySelector("#errores");
+  const botonGuardar = document.querySelector("#botonGuardar");
 
-  // Validaciones según rúbrica del proyecto
-  if (nombre.length <= 8) {
-    mensajes.push("El nombre debe tener más de 8 caracteres.");
+  // Validación del formulario de tareas
+  function validateTaskForm() {
+    const nombre = document.querySelector("#nombre").value.trim();
+    const descripcion = document.querySelector("#descripcion").value.trim();
+    const asignadoA = document.querySelector("#asignadoA").value.trim();
+    const fechaDeEntrega = document.querySelector("#fechaDeEntrega").value;
+    const estado = document.querySelector("#estado").value;
+
+    const mensajes = [];
+
+    if (nombre.length <= 8) {
+      mensajes.push("El nombre debe tener más de 8 caracteres.");
+    }
+
+    if (descripcion.length <= 15) {
+      mensajes.push("La descripción debe tener más de 15 caracteres.");
+    }
+
+    if (asignadoA.length <= 8) {
+      mensajes.push("El campo “Asignado a” debe tener más de 8 caracteres.");
+    }
+
+    if (!fechaDeEntrega) {
+      mensajes.push("Selecciona una fecha de entrega.");
+    }
+
+    if (!estado) {
+      mensajes.push("Selecciona un estado para la tarea.");
+    }
+
+    errores.replaceChildren();
+
+    if (mensajes.length > 0) {
+      const lista = document.createElement("ul");
+      mensajes.forEach(mensaje => {
+        const elemento = document.createElement("li");
+        elemento.textContent = mensaje;
+        lista.append(elemento);
+      });
+
+      errores.append(lista);
+      errores.hidden = false;
+      return false;
+    }
+
+    errores.hidden = true;
+    return true;
   }
 
-  if (descripcion.length <= 15) {
-    mensajes.push("La descripción debe tener más de 15 caracteres.");
-  }
+  // ------------------------------------------------------------------------
+  // EVENTO SUBMIT DEL FORMULARIO
+  // Guarda una tarea nueva o actualiza una existente según la rúbrica
+  // ------------------------------------------------------------------------
+  formulario.addEventListener("submit", event => {
+    event.preventDefault();
 
-  if (asignadoA.length <= 8) {
-    mensajes.push("El campo “Asignado a” debe tener más de 8 caracteres.");
-  }
+    if (!validateTaskForm()) return;
 
-  if (!fechaDeEntrega) {
-    mensajes.push("Selecciona una fecha de entrega.");
-  }
+    const formData = new FormData(formulario);
+    const datosTarea = {
+      nombre: formData.get("nombre").trim(),
+      descripcion: formData.get("descripcion").trim(),
+      asignadoA: formData.get("asignadoA").trim(),
+      fechaDeEntrega: formData.get("fechaDeEntrega"),
+      estado: formData.get("estado")
+    };
 
-  if (!estado) {
-    mensajes.push("Selecciona un estado para la tarea.");
-  }
+    if (idTareaEnEdicion !== null) {
 
-  // Mostramos u ocultamos la caja de mensajes de error
-  errores.replaceChildren();
+      // --------------------------------------------------------------------
+      taskManager.updateTask(idTareaEnEdicion, datosTarea);
 
-  if (mensajes.length > 0) {
-    const lista = document.createElement("ul");
-    mensajes.forEach(mensaje => {
-      const elemento = document.createElement("li");
-      elemento.textContent = mensaje;
-      lista.append(elemento);
-    });
+      // Cuando la tarea se actualiza, el botón vuelve a llamarse "guardar"
+      botonGuardar.textContent = "guardar";
 
-    errores.append(lista);
-    errores.hidden = false;
-    return false;
-  }
+      // Limpiamos la variable de edición
+      idTareaEnEdicion = null;
+    } else {
+      // MODO AGREGAR: agregamos la nueva tarea
+      taskManager.addTask(datosTarea);
+    }
 
-  errores.hidden = true;
-  return true;
+    // Los campos del formulario deben quedar vacíos nuevamente
+    formulario.reset();
+
+    // Actualizamos la vista y guardamos en LocalStorage
+    taskManager.render();
+    taskManager.save();
+  });
+
+  // ------------------------------------------------------------------------
+  // DELEGACIÓN DE EVENTOS EN LA LISTA DE TAREAS
+  // ------------------------------------------------------------------------
+  listaTareas.addEventListener("click", event => {
+    // 1. EDITAR / ACTUALIZAR TAREA (según la rúbrica):
+    // Al hacer clic en una tarea (o en su botón Editar), la información se muestra
+    // en el formulario y el botón de guardar cambia a "actualización".
+    const clicEnEditar = event.target.closest(".btn-editar");
+    const tarjetaClickeada = event.target.closest(".tarjeta-tarea");
+
+    if (clicEnEditar || (tarjetaClickeada && !event.target.closest(".boton-eliminar") && !event.target.closest(".done-button"))) {
+      const elementoTarea = tarjetaClickeada;
+      const taskId = Number(elementoTarea.dataset.taskId);
+      const tarea = taskManager.getTaskById(taskId);
+
+      if (tarea) {
+        // Cargar los datos de la tarea seleccionada en el formulario
+        const campoNombre = document.querySelector("#nombre");
+        const campoDescripcion = document.querySelector("#descripcion");
+        const campoAsignado = document.querySelector("#asignadoA");
+        const campoFecha = document.querySelector("#fechaDeEntrega");
+        const campoEstado = document.querySelector("#estado");
+
+        if (campoNombre) campoNombre.value = tarea.nombre;
+        if (campoDescripcion) campoDescripcion.value = tarea.descripcion;
+        if (campoAsignado) campoAsignado.value = tarea.asignadoA;
+        if (campoFecha) campoFecha.value = tarea.fechaDeEntrega;
+        if (campoEstado) campoEstado.value = tarea.estado;
+
+
+        // Guardamos el id de la tarea que estamos editando
+        idTareaEnEdicion = tarea.id;
+
+        // El botón de guardar cambia de nombre a "actualización"
+        botonGuardar.textContent = "actualización";
+
+        // Desplazamos suavemente al formulario para comodidad del usuario
+        formulario.scrollIntoView({ behavior: "smooth" });
+      }
+      return;
+    }
+
+    // 2. MARCAR COMO HECHO:
+    if (event.target.classList.contains("done-button")) {
+      const elementoTarea = event.target.closest(".tarjeta-tarea") || event.target.parentElement.parentElement;
+      const taskId = Number(elementoTarea.dataset.taskId);
+      const tarea = taskManager.getTaskById(taskId);
+
+      if (tarea) {
+        tarea.estado = "HECHO";
+        taskManager.render();
+        taskManager.save();
+      }
+      return;
+    }
+
+    // 3. ELIMINAR TAREA:
+    if (event.target.classList.contains("boton-eliminar")) {
+      const elementoTarea = event.target.closest(".tarjeta-tarea") || event.target.parentElement.parentElement;
+      const taskId = Number(elementoTarea.dataset.taskId);
+
+      taskManager.deleteTask(taskId);
+      taskManager.render();
+      taskManager.save();
+    }
+  });
+
+  // CARGA INICIAL:
+  // 1. Carga desde localStorage
+  // 2. Renderiza en pantalla
+  taskManager.load();
+  taskManager.render();
 }
 
 // ==========================================================================
-// EVENTO SUBMIT DEL FORMULARIO
+// EXPORTACIÓN PARA PRUEBAS UNITARIAS (Node.js / Jest / node:test)
 // ==========================================================================
-formulario.addEventListener("submit", event => {
-  event.preventDefault();
-
-  // Si la validación falla, detenemos el proceso
-  if (!validateTaskForm()) return;
-
-  const formData = new FormData(formulario);
-
-  // Agregamos la tarea a la clase TaskManager
-  taskManager.addTask({
-    nombre: formData.get("nombre").trim(),
-    descripcion: formData.get("descripcion").trim(),
-    asignadoA: formData.get("asignadoA").trim(),
-    fechaDeEntrega: formData.get("fechaDeEntrega"),
-    estado: formData.get("estado")
-  });
-
-  // Limpiamos los campos del formulario
-  formulario.reset();
-
-  // Refrescamos la pantalla con las tareas actualizadas
-  taskManager.render();
-
-  // TAREA 8 - PASO 2: Guardamos los cambios en localStorage después de agregar
-  taskManager.save();
-});
-
-// ==========================================================================
-// DELEGACIÓN DE EVENTOS EN LA LISTA DE TAREAS
-// Escucha clicks en botones de completar y eliminar
-// ==========================================================================
-listaTareas.addEventListener("click", event => {
-  // 1. Verificamos si se hizo clic en el botón de marcar como completada
-  if (event.target.classList.contains("done-button")) {
-    // Usamos recorrido del DOM para encontrar el elemento contenedor de la tarjeta
-    const elementoTarea = event.target.closest(".tarjeta-tarea") || event.target.parentElement.parentElement;
-
-    // Obtenemos el id del atributo de datos y lo convertimos a número
-    const taskId = Number(elementoTarea.dataset.taskId);
-
-    // Buscamos la tarea y cambiamos su estado a HECHO
-    const tarea = taskManager.getTaskById(taskId);
-    if (tarea) {
-      tarea.estado = "HECHO";
-
-      // Volvemos a dibujar la lista en pantalla
-      taskManager.render();
-
-      // TAREA 8 - PASO 2: Guardamos los cambios en localStorage después de actualizar el estado
-      taskManager.save();
-    }
-  }
-
-  // 2. Verificamos si se hizo clic en el botón de eliminar tarea
-  if (event.target.classList.contains("boton-eliminar")) {
-    const elementoTarea = event.target.closest(".tarjeta-tarea") || event.target.parentElement.parentElement;
-    const taskId = Number(elementoTarea.dataset.taskId);
-
-    // Eliminamos la tarea y refrescamos la vista
-    taskManager.deleteTask(taskId);
-    taskManager.render();
-
-    // TAREA 8 - PASO 2: Guardamos los cambios en localStorage después de eliminar
-    taskManager.save();
-  }
-});
-
-// ==========================================================================
-// TAREA 8 - PASO 4: Cargar las tareas al iniciar la aplicación
-// El orden es importante:
-// 1. Cargamos las tareas guardadas en localStorage (si existen)
-// 2. Renderizamos para dibujarlas en pantalla
-// ==========================================================================
-taskManager.load();
-taskManager.render();
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = { TaskManager, createTaskHtml };
+}

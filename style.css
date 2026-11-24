@@ -206,6 +206,13 @@ h2 {
   gap: 14px;
 }
 
+.acciones-superiores {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+}
+
 .tarjeta-tarea h3 {
   margin: 0;
   font-size: 1.05rem;
@@ -265,6 +272,12 @@ h2 {
   padding-top: 10px;
   border-top: 1px solid var(--borde);
   gap: 10px;
+}
+
+.btn-editar {
+  font-size: 0.82rem;
+  font-weight: 600;
+  margin-right: 6px;
 }
 
 .done-button {

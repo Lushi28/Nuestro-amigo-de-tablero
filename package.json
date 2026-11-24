@@ -1,0 +1,12 @@
+{
+  "name": "nuestro-amigo-de-tablero",
+  "version": "1.0.0",
+  "description": "Planificador de tareas con JavaScript, LocalStorage y pruebas unitarias",
+  "main": "script.js",
+  "scripts": {
+    "test": "node --test test/taskManager.test.js"
+  },
+  "keywords": [],
+  "author": "Luisa Sepulveda",
+  "license": "ISC"
+}
